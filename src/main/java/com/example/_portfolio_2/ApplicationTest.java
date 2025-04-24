@@ -1,7 +1,7 @@
+
 package com.example._portfolio_2;
 //Importerer følgende javafx klasser
 import javafx.application.Application;
-import javafx.scene.control.Alert;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -9,76 +9,76 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-//Importerer Java klasser * = Mange
 import java.util.*;
 
-public class HelloApplication extends Application {
+public class ApplicationTest extends Application {
+
+    // Labels til ECTS
+    Label labelECTSProgram = new Label("0");
+    Label labelECTSSubject1 = new Label("0");
+    Label labelECTSSubject2 = new Label("0");
+    Label labelECTSElectives = new Label("0");
+    Label labelECTSTotal = new Label("total 0");
+
+    Model model = new Model();
 
     @Override
     public void start(Stage stage) {
 
-
-        // Opretter labels/Overskrifter til vores GUI
-        Label label1 = new Label("Program");
+        // GUI Labels/Overskrifter
+        Label label1 = new Label("Bachelor Program");
         Label label2 = new Label("Subject 1");
         Label label3 = new Label("Subject 2");
         Label label4 = new Label("Electives");
 
-        // Opretter model-instans for at hente data (fra model programmet?)
-        Model model = new Model();
-
-        // Combobox til valg af bachelorprogram
+        // Comboox til bachProgram
         ComboBox<String> comboBoxProgram = new ComboBox<>();
+        //henter alle basiskurser fra vores 'Model' klasse, og tilføjer dem til combobox
         comboBoxProgram.getItems().addAll(model.baseProgram());
-
-        //Combobox til kurser
+        //Combobox til kurser fra det valgte bachprogram
         ComboBox<String> comboBoxCourses = new ComboBox<>();
-        //Opretter et textarea :)
+        //Opretter et textarea til de valgte kurser, vi sætter 'editable' til false så %skrive i area
         TextArea textAreaCourses = new TextArea();
-        TextArea textAreaElectives = new TextArea();
-        //Bruger skal ikke kunne ændre i vores textarea
         textAreaCourses.setEditable(false);
-        textAreaElectives.setEditable(false);
 
-        // Håndtering af programvalg
+        //Action event til vores bachprogram kollonne
+        //Når et program vælges--> opdateres tilknyttet kurser
         comboBoxProgram.setOnAction(event -> {
-            //Henter det valgte program
             String selectedProgram = comboBoxProgram.getValue();
-            //Rydder "fravalgte" kurser fra combobox
+            //ryd gamle kurser
             comboBoxCourses.getItems().clear();
-            //Rydder "fravalgte" kurser fra textarea
             textAreaCourses.clear();
-            //Henter listen af kurser, der hører til det valgte program - fra model-klassen
-            List<String> courses = model.baseCourse(selectedProgram);
-            if (courses != null) {
-                comboBoxCourses.getItems().addAll(courses);
+            labelECTSProgram.setText("0");
+            if (selectedProgram != null) {
+                comboBoxCourses.getItems().addAll(model.baseCourse(selectedProgram));
             }
+            //opdater ECTS-værdi
+            updateTotalECTS();
         });
-
-        // Når kursus vælges, tilføj til textarea
+        //
         comboBoxCourses.setOnAction(event -> {
             String selectedCourse = comboBoxCourses.getValue();
             if (selectedCourse != null && !textAreaCourses.getText().contains(selectedCourse)) {
                 textAreaCourses.appendText(selectedCourse + "\n");
+                int current = Integer.parseInt(labelECTSProgram.getText());
+                labelECTSProgram.setText(String.valueOf(current + model.courseWeight(selectedCourse)));
+                updateTotalECTS();
+                model.saveCourse("Safi", selectedCourse); // Gem til database
             }
         });
 
-        // Combobox til fagmodul 1 & 2
+
+        // FAGMODULER
         ComboBox<String> comboBoxSubject1 = new ComboBox<>();
-        TextArea textAreaSubject1 = new TextArea();
-        textAreaSubject1.setEditable(false);
-
-
         ComboBox<String> comboBoxSubject2 = new ComboBox<>();
+        TextArea textAreaSubject1 = new TextArea();
         TextArea textAreaSubject2 = new TextArea();
+        textAreaSubject1.setEditable(false);
         textAreaSubject2.setEditable(false);
 
         comboBoxSubject1.getItems().addAll(model.subjectModule());
         comboBoxSubject2.getItems().addAll(model.subjectModule());
 
-
-
-        // Kurser af fagmoduler (Afhænger af valgt subject module)
         ComboBox<String> comboBoxSubjectCourses1 = new ComboBox<>();
         ComboBox<String> comboBoxSubjectCourses2 = new ComboBox<>();
 
@@ -86,44 +86,50 @@ public class HelloApplication extends Application {
             String selectedSubject = comboBoxSubject1.getValue();
             comboBoxSubjectCourses1.getItems().clear();
             textAreaSubject1.clear();
-
+            labelECTSSubject1.setText("0");
             if (selectedSubject != null) {
-                List<String> subjectCourses = model.subjectCourse(selectedSubject);
-                comboBoxSubjectCourses1.getItems().addAll(subjectCourses);
+                comboBoxSubjectCourses1.getItems().addAll(model.subjectCourse(selectedSubject));
             }
+            updateTotalECTS();
         });
 
-
-        // **Når Subject 2 vælges → Opdater kurser, men ikke textArea endnu**
         comboBoxSubject2.setOnAction(event -> {
             String selectedSubject = comboBoxSubject2.getValue();
             comboBoxSubjectCourses2.getItems().clear();
             textAreaSubject2.clear();
-
+            labelECTSSubject2.setText("0");
             if (selectedSubject != null) {
-                List<String> subjectCourses = model.subjectCourse(selectedSubject);
-                comboBoxSubjectCourses2.getItems().addAll(subjectCourses);
+                comboBoxSubjectCourses2.getItems().addAll(model.subjectCourse(selectedSubject));
             }
+            updateTotalECTS();
         });
-        // **Når et kursus vælges i Subject 1 → Tilføj til textAreaSubject1**
+
         comboBoxSubjectCourses1.setOnAction(event -> {
             String selectedCourse = comboBoxSubjectCourses1.getValue();
             if (selectedCourse != null && !textAreaSubject1.getText().contains(selectedCourse)) {
                 textAreaSubject1.appendText(selectedCourse + "\n");
+                int current = Integer.parseInt(labelECTSSubject1.getText());
+                labelECTSSubject1.setText(String.valueOf(current + model.courseWeight(selectedCourse)));
+                updateTotalECTS();
+                model.saveCourse("Safi", selectedCourse);
+                updateTotalECTS();
             }
         });
-        // **Når et kursus vælges i Subject 2 → Tilføj til textAreaSubject2**
+
         comboBoxSubjectCourses2.setOnAction(event -> {
             String selectedCourse = comboBoxSubjectCourses2.getValue();
             if (selectedCourse != null && !textAreaSubject2.getText().contains(selectedCourse)) {
                 textAreaSubject2.appendText(selectedCourse + "\n");
+                int current = Integer.parseInt(labelECTSSubject2.getText());
+                labelECTSSubject2.setText(String.valueOf(current + model.courseWeight(selectedCourse)));
+                updateTotalECTS();
+                model.saveCourse("Safi", selectedCourse);
+
+                updateTotalECTS();
             }
         });
-        //Combobox til layout, så det ser lidt pænere ud
-        ComboBox comboboxLayout = new ComboBox();
 
-
-        // Combobox til valgfag
+        // Electives
         ComboBox<String> comboBoxElectives = new ComboBox<>();
         comboBoxElectives.getItems().addAll("Functional Programming", "Scientific Computing");
         TextArea textAreaElective = new TextArea();
@@ -133,67 +139,58 @@ public class HelloApplication extends Application {
             String selectedElective = comboBoxElectives.getValue();
             if (selectedElective != null && !textAreaElective.getText().contains(selectedElective)) {
                 textAreaElective.appendText(selectedElective + "\n");
+                int current = Integer.parseInt(labelECTSElectives.getText());
+                labelECTSElectives.setText(String.valueOf(current + model.courseWeight(selectedElective)));
+                updateTotalECTS();
+                model.saveCourse("Safi", selectedElective);
+                updateTotalECTS();
             }
         });
 
-
-
-
-        // Vores gridpane layout, så vi kan styre placering af vores elementer
+        // Layout
         GridPane root = new GridPane();
-        //Hvad gør disse to?
-       // root.setHgap(10);
-        //root.setVgap(10);
 
         root.add(label1, 0, 0);
         root.add(comboBoxProgram, 0, 1);
         root.add(comboBoxCourses, 0, 2);
         root.add(textAreaCourses, 0, 3);
+        root.add(labelECTSProgram, 0, 4);
 
         root.add(label2, 1, 0);
         root.add(comboBoxSubject1, 1, 1);
         root.add(comboBoxSubjectCourses1, 1, 2);
         root.add(textAreaSubject1, 1, 3);
+        root.add(labelECTSSubject1, 1, 4);
 
         root.add(label3, 2, 0);
         root.add(comboBoxSubject2, 2, 1);
         root.add(comboBoxSubjectCourses2, 2, 2);
         root.add(textAreaSubject2, 2, 3);
+        root.add(labelECTSSubject2, 2, 4);
 
         root.add(label4, 3, 0);
-        root.add(comboboxLayout,3,1);
         root.add(comboBoxElectives, 3, 2);
-        root.add(textAreaElectives, 3, 3);
+        root.add(textAreaElective, 3, 3);
+        root.add(labelECTSElectives, 3, 4);
+        root.add(labelECTSTotal, 3, 5);
 
-        // Vores "scene"
         Scene scene = new Scene(root, 800, 400);
-        stage.setTitle("Bachelor Program");
+        stage.setTitle("Bachelor Programme");
         stage.setScene(scene);
         stage.show();
-
     }
-    //Database!! Men virker ikke?
-    /*
-    class model {
-        MyDB db = new MyDB();
-        model(){
-            db.cmd("create table if not exist bachelor_program " );
-        }
-
+//metode til at opdatere ECTS-point
+    void updateTotalECTS() {
+        int total = Integer.parseInt(labelECTSProgram.getText()) +
+                Integer.parseInt(labelECTSSubject1.getText()) +
+                Integer.parseInt(labelECTSSubject2.getText()) +
+                Integer.parseInt(labelECTSElectives.getText());
+        labelECTSTotal.setText("total " + total);
     }
-*/
+
     public static void main(String[] args) {
         launch();
     }
 }
-
-//NOTE:Hvis tid, lav programmet metodeorienteret.
-//NOTE: Hvis tid, lav layout pænere ved at ændre størrelsen på combobox, textarea, labels osv.
-
-
-
-
-
-
-
-
+//Note: lav programmet metodeorienteret
+//Note: Inkluder en metode til projekter, igen tjek i database!

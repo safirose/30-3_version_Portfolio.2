@@ -1,0 +1,89 @@
+-- Drop gamle tabeller hvis de findes
+DROP TABLE IF EXISTS signup;
+DROP TABLE IF EXISTS student;
+DROP TABLE IF EXISTS course;
+
+-- Opret tabeller
+CREATE TABLE student (
+                         name TEXT PRIMARY KEY
+);
+
+CREATE TABLE course (
+                        courseid INTEGER,
+                        ects INTEGER,
+                        name TEXT PRIMARY KEY,
+                        program TEXT
+);
+
+CREATE TABLE signup (
+                        studname TEXT REFERENCES student(name),
+                        coursename TEXT REFERENCES course(name)
+);
+
+-- Indsæt en studerende
+INSERT INTO student VALUES ('Safi');
+
+-- Indsæt nogle kurser
+insert into course values(11,5,'BK1 Empirical Data','NatBach');
+insert into course values(12,5,'BK2 Experimental Methods','NatBach');
+insert into course values(13,5,'BK3 Theory of Natural Science','NatBach');
+insert into course values(14,5,'Logic and Discrete Mathematics','NatBach');
+insert into course values(15,5,'Functional Biology – Zoology','NatBach');
+insert into course values(16,5,'Linear Algebra','NatBach');
+insert into course values(17,5,'Organic Chemistry','NatBach');
+insert into course values(18,5,'Biological Chemistry','NatBach');
+insert into course values(19,5,'Statistical Models','NatBach');
+insert into course values(20,5,'Functional Programming and Language Implementations','NatBach');
+insert into course values(21,5,'Classical Mechanics','NatBach');
+insert into course values(22,5,'Environmental Science','NatBach');
+insert into course values(23,5,'Cell Biology','NatBach');
+insert into course values(24,5,'Functional biology – Botany','NatBach');
+insert into course values(25,5,'Supplementary Physics','NatBach');
+insert into course values(26,5,'Calculus','NatBach');
+insert into course values(27,5,'The Chemical Reaction','NatBach');
+insert into course values(28,5,'Scientific Computing','NatBach');
+insert into course values(29,5,'Energy and Climate Changes','NatBach');
+insert into course values(30,5,'BP1 NatBach','NatBach');
+insert into course values(31,5,'BP2 NatBach','NatBach');
+insert into course values(32,5,'BP3 NatBach','NatBach');
+insert into course values(33,5,'Bachelorproject NatBach','NatBach');
+insert into course values(34,5,'Design og Konstruktion I+Workshop','HumTek');
+insert into course values(35,5,'Subjektivitet, Teknologi og Samfund I','HumTek');
+insert into course values(36,5,'Teknologiske systemer og artefakter I','HumTek');
+insert into course values(37,5,'Videnskabsteori','HumTek');
+insert into course values(38,5,'Design og Konstruktion II+Workshop','HumTek');
+insert into course values(39,5,'Subjektivitet, Teknologi og Samfund II','HumTek');
+insert into course values(40,5,'Bæredygtige teknologier','HumTek');
+insert into course values(41,5,'Kunstig intelligens','HumTek');
+insert into course values(42,5,'Medier og teknologi - datavisualisering','HumTek');
+insert into course values(43,5,'Teknologiske Systemer og Artefakter II - Sundhedsteknologi','HumTek');
+insert into course values(44,5,'Den (in)humane storby','HumTek');
+insert into course values(45,5,'Interactive Design in the Field','HumTek');
+insert into course values(46,5,'Organisation og ledelse af designprocesser','HumTek');
+insert into course values(47,5,'BP1 HumTek','HumTek');
+insert into course values(48,5,'BP2 HumTek','HumTek');
+insert into course values(49,5,'BP3 HumTek','HumTek');
+insert into course values(50,5,'Bachelorproject HumTek','HumTek');
+insert into course values(51,5,'Essential Computing','Computer Science');
+insert into course values(52,10,'Software Development','Computer Science');
+insert into course values(53,5,'Interactive Digital Systems','Computer Science');
+insert into course values(54,5,'Subject module project in Computer Science','Computer Science');
+insert into course values(55,5,'Organisatorisk forandring og IT','Informatik');
+insert into course values(56,10,'BANDIT','Informatik');
+insert into course values(57,5,'Web baserede IT-Systemer','Informatik');
+insert into course values(58,5,'Subject module project in Informatik','Informatik');
+insert into course values(59,5,'Essential Astrology','Astrology');
+insert into course values(60,5,'Venus studies','Astrology');
+insert into course values(61,5,'Mars studies','Astrology');
+insert into course values(62,5,'Ascendant calculations','Astrology');
+insert into course values(63,5,'Subject module project in Astrology','Astrology');
+
+
+-- Udtræk: hvor mange ECTS har Safi valgt?
+SELECT studname, SUM(ects) AS total_ects
+FROM signup
+         INNER JOIN course ON course.name = signup.coursename
+GROUP BY studname;
+SELECT s.studname, c.name, c.ects
+FROM signup s
+         JOIN course c ON s.coursename = c.name;

@@ -8,8 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class db {
-
-
     public class MyDB {
         Connection conn = null;
 
@@ -19,7 +17,7 @@ public class db {
 
         public void open() {
             try {
-                String url = "jdbc:sqlite:identifier.sqlite";
+                String url = "jdbc:sqlite:" + System.getProperty("user.dir") + "/identifier.sqlite";
                 conn = DriverManager.getConnection(url);
             } catch (SQLException e) {
                 System.out.println("cannot open");
