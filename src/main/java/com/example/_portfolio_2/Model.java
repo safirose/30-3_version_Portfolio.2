@@ -87,8 +87,8 @@ class Model {
     }
 
 
-    public String subjectProject(String subject) {
-        return "Subject module project in " + subject;
+    public List <String> subjectProject(String subject) {
+        return Arrays.asList("Subject module project in " + subject);
     }
 
     public int courseWeight(String course) {

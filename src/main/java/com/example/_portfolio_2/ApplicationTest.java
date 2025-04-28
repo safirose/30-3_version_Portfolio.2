@@ -125,6 +125,10 @@ public class ApplicationTest extends Application {
     labelECTSSubject1.setText("0");
     if (selectedSubject != null) {
     comboBoxSubjectCourses1.getItems().addAll(model.subjectCourse(selectedSubject));
+    List<String> projects = model.subjectProject(selectedSubject);
+    if (projects != null) {
+    comboBoxSubjectCourses1.getItems().addAll(projects);
+     }
     }
     updateTotalECTS();
     });
@@ -150,6 +154,10 @@ private void setupSubject2Selection() {
         labelECTSSubject2.setText("0");
         if (selectedSubject != null) {
             comboBoxSubjectCourses2.getItems().addAll(model.subjectCourse(selectedSubject));
+            List<String> projects = model.subjectProject(selectedSubject);
+            if (projects != null) {
+                comboBoxSubjectCourses2.getItems().addAll(projects);
+            }
         }
         updateTotalECTS();
     });

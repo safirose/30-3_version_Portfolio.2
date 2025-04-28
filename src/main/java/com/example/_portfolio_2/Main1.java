@@ -25,7 +25,8 @@ import java.util.*;
             for (String prg : m.subjectModule()){
                 for (String s : m.subjectCourse(prg))
                     obj.showActivity(prg, s);
-                obj.showActivity(prg, m.subjectProject(prg));
+                for (String s : m.subjectProject(prg))
+                obj.showActivity(prg,s);
             }
         }
         void showActivity(String prg, String s) {
