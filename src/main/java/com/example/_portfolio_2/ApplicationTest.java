@@ -51,6 +51,10 @@ public class ApplicationTest extends Application {
             labelECTSProgram.setText("0");
             if (selectedProgram != null) {
                 comboBoxCourses.getItems().addAll(model.baseCourse(selectedProgram));
+                List<String> projects = model.baseProject(selectedProgram);
+                if (projects != null) {
+                    comboBoxCourses.getItems().addAll(projects);
+                }
             }
             //opdater ECTS-værdi
             updateTotalECTS();
@@ -89,6 +93,7 @@ public class ApplicationTest extends Application {
             labelECTSSubject1.setText("0");
             if (selectedSubject != null) {
                 comboBoxSubjectCourses1.getItems().addAll(model.subjectCourse(selectedSubject));
+                comboBoxSubjectCourses1.getItems().addAll(model.subjectProject(selectedSubject));
             }
             updateTotalECTS();
         });
@@ -100,6 +105,7 @@ public class ApplicationTest extends Application {
             labelECTSSubject2.setText("0");
             if (selectedSubject != null) {
                 comboBoxSubjectCourses2.getItems().addAll(model.subjectCourse(selectedSubject));
+                comboBoxSubjectCourses2.getItems().addAll(model.subjectProject(selectedSubject));
             }
             updateTotalECTS();
         });
@@ -113,8 +119,13 @@ public class ApplicationTest extends Application {
                 updateTotalECTS();
                 model.saveCourse("Safi", selectedCourse);
                 updateTotalECTS();
+                String subjectProjects = model.subjectProject(selectedCourse);
+                if (subjectProjects != null) {
+                    comboBoxSubjectCourses1.getItems().addAll(subjectProjects);
+
             }
-        });
+        }
+                });
 
         comboBoxSubjectCourses2.setOnAction(event -> {
             String selectedCourse = comboBoxSubjectCourses2.getValue();

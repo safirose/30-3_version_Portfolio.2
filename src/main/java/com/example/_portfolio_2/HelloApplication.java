@@ -52,14 +52,20 @@ public class HelloApplication extends Application {
             List<String> courses = model.baseCourse(selectedProgram);
             if (courses != null) {
                 comboBoxCourses.getItems().addAll(courses);
+                //Tilføjer basiskurser
+                List<String> projects = model.baseProject(selectedProgram);
+                if (projects != null) {
+                    comboBoxCourses.getItems().addAll(projects);
             }
-        });
+        }
+                });
 
         // Når kursus vælges, tilføj til textarea
         comboBoxCourses.setOnAction(event -> {
             String selectedCourse = comboBoxCourses.getValue();
             if (selectedCourse != null && !textAreaCourses.getText().contains(selectedCourse)) {
                 textAreaCourses.appendText(selectedCourse + "\n");
+
             }
         });
 

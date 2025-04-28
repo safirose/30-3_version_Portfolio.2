@@ -86,16 +86,24 @@ class Model {
         return null;
     }
 
+
     public String subjectProject(String subject) {
         return "Subject module project in " + subject;
     }
 
     public int courseWeight(String course) {
-        if (course.equals("Software Development")) return 10;
-        if (course.equals("BANDIT")) return 10;
+        if (course.startsWith("Software Development")) return 10;
+        if (course.startsWith("BANDIT")) return 10;
+        if (course.startsWith("BP1 ")) return 15;
+        if (course.startsWith("BP2 ")) return 15;
+        if (course.startsWith("BP3 ")) return 15;
+        if (course.startsWith("Bachelorproject ")) return 15;
+        if (course.startsWith("Subject module project in ")) return 15;
         return 5;
+
     }
 
+//skal vi bruge den her?
     public boolean isProject(String s) {
         for (String fm : subjectModule())
             if (s.equals(subjectProject(fm))) return true;
